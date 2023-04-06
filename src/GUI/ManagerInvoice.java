@@ -1,10 +1,10 @@
 package GUI;
+import com.toedter.calendar.IDateEditor;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import GUI.library;
 
 public class ManagerInvoice extends JFrame {
     private JPanel managerInvoiceContentPane;//tao mot contentpane cho JFrame
@@ -21,7 +21,8 @@ public class ManagerInvoice extends JFrame {
     private JTable listInvoiceExport;
     private DefaultTableModel listInvoiceModelImport;
     private JTable listInvoiceImport;
-    private JScrollPane listInvoiceScrollPane;
+    private JScrollPane listInvoiceScrollPaneExport;
+    private JScrollPane listInvoiceScrollPaneImport;
     private JLabel titleContainShowListInvoice;
     private JPanel managerInvoiceBody;
     private JLabel titleComputerFilter;
@@ -35,18 +36,23 @@ public class ManagerInvoice extends JFrame {
     private JDateChooser dateChooserFrom;
     private JButton btnCancel;
     private JButton btnSearch;
+    public newJFrame myLiBrary;
+    private JPanel containListInvoice;
+    private JPanel containShowListInvoice;
     public ManagerInvoice(){
+//        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+//        this.setSize(screen.width,screen.height);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(new FlowLayout());
+        this.setLayout(new BorderLayout());
     }
 
     public void sizeInComputer(JPanel jpanel){
-
         jpanel.setPreferredSize(new Dimension(1200,650));
     }
 
-    public void setPaddingJLabel(int top,int left,int buttom,int right,JLabel jlabel){
+
+    public void setMarginJLabel(int top, int left, int buttom, int right, JLabel jlabel){
         jlabel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(0,0,0,1)),
                 BorderFactory.createEmptyBorder(top,left,buttom,right)
@@ -58,6 +64,23 @@ public class ManagerInvoice extends JFrame {
                 BorderFactory.createLineBorder(new Color(0,0,0,1)),
                 BorderFactory.createEmptyBorder(top,left,buttom,right)
         ));
+    }
+
+
+    public void focusEventJDatechooser(JDateChooser jDateChooser){
+        IDateEditor editor = jDateChooser.getDateEditor();
+        JComponent comp = editor.getUiComponent();
+        comp.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                jDateChooser.setCalendar(null);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
     }
 
     public void setPlaceHoder(String textPlaceHoder,JTextField jtextField){
@@ -72,10 +95,10 @@ public class ManagerInvoice extends JFrame {
         titleManagerInvoice = new JLabel("Quản lý hóa đơn");
         titleManagerInvoice.setFont(new Font("serif",Font.BOLD,30));
         titleManagerInvoice.setForeground(Color.WHITE);
-        setPaddingJLabel(0,20,0,0,titleManagerInvoice);
+        setMarginJLabel(0,20,0,0,titleManagerInvoice);
         containTitleManagerInvoice = new JPanel();
         containTitleManagerInvoice.setLayout(new FlowLayout(FlowLayout.LEFT));
-        containTitleManagerInvoice.setPreferredSize(new Dimension(1198,50));
+        containTitleManagerInvoice.setPreferredSize(new Dimension(1198,100));
         containTitleManagerInvoice.setBackground(new Color(42,121,255));
         containTitleManagerInvoice.add(titleManagerInvoice);
 //        1-----Title Quan Ly hoa don-END---
@@ -87,16 +110,14 @@ public class ManagerInvoice extends JFrame {
         actionShowInvoiceExport.setFont(new Font("serif",Font.BOLD,20));
         actionShowInvoiceExport.setCursor(new Cursor(Cursor.HAND_CURSOR));
         actionShowInvoiceExport.setForeground(Color.WHITE);
-//        setPaddingJLabel(50,10,0,0,showInvoiceBuy);
         actionShowInvoiceExport.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(0,0,0,1)),
-                BorderFactory.createEmptyBorder(50,0,5,0)
+                BorderFactory.createMatteBorder(0,0,2,0,Color.WHITE),
+                BorderFactory.createEmptyBorder(0,0,5,0)
         ));
         actionShowInvoiceImport = new JLabel("Hóa đơn nhập");
         actionShowInvoiceImport.setFont(new Font("serif",Font.BOLD,20));
         actionShowInvoiceImport.setCursor(new Cursor(Cursor.HAND_CURSOR));
         actionShowInvoiceImport.setForeground(Color.WHITE);
-        setPaddingJLabel(50,0,0,0, actionShowInvoiceImport);
         containShowInvoiceAction = new JPanel(new FlowLayout(FlowLayout.LEFT));
         containShowInvoiceAction.setBackground(new Color(42,121,255));
         containShowInvoiceAction.add(actionShowInvoiceExport);
@@ -113,17 +134,20 @@ public class ManagerInvoice extends JFrame {
         btnCreateInvoice.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnCreateInvoice.setFocusPainted(false);//dung de bo border cua text ben trong button
         setPaddingJButton(5,20,5,20,btnCreateInvoice);
-        containCreateNewInvoiceAction = new JPanel(new FlowLayout(FlowLayout.RIGHT,50,50));//muc dich set hgap va vgap de cang chinh JButton
+
+
+
+
+        containCreateNewInvoiceAction = new JPanel(new FlowLayout(FlowLayout.RIGHT,30,5));//muc dich set hgap va vgap de cang chinh JButton
         containCreateNewInvoiceAction.setBackground(new Color(42,121,255));
         containCreateNewInvoiceAction.add(btnCreateInvoice,BorderLayout.LINE_END);
-//        containCreateNewInvoiceAction.setBorder(BorderFactory.createLineBorder(Color.red));
 //        2.2-----Nut them hoa don moi-END-----
 
 
         containActionInHeader = new JPanel();
         containActionInHeader.setLayout(new BoxLayout(containActionInHeader,BoxLayout.X_AXIS));
-        containActionInHeader.setPreferredSize(new Dimension(1190,100));
-        containActionInHeader.add(Box.createRigidArea(new Dimension(5,0)));
+        containActionInHeader.setPreferredSize(new Dimension(1190,50));
+//        containActionInHeader.add(Box.createRigidArea(new Dimension(5,0)));
         containActionInHeader.setBackground(new Color(42,121,255));
         containActionInHeader.add( containShowInvoiceAction);
         containActionInHeader.add(containCreateNewInvoiceAction);
@@ -157,28 +181,35 @@ public class ManagerInvoice extends JFrame {
 //            b------Date limit of filter------
         limitDateFrom = new JLabel("Từ ngày");
         dateChooserFrom = new JDateChooser();
-        dateChooserFrom.setPreferredSize(new Dimension(121,30));
         dateChooserFrom.setFont(new Font("serif",Font.PLAIN,16));
         dateChooserFrom.setDateFormatString("yyyy-MM-dd");
+        JTextField placehoderDateFrom = (JTextField)dateChooserFrom.getDateEditor().getUiComponent();
+        placehoderDateFrom.setText("yyyy-mm-dd");
+        focusEventJDatechooser(dateChooserFrom);
+        placehoderDateFrom.setForeground(new Color(142,142,142));
         containDateFrom = new JPanel(new GridLayout(2,1,0,0));
-        containDateFrom.setPreferredSize(new Dimension(107,50));
+        containDateFrom.setPreferredSize(new Dimension(112,50));
         containDateFrom.add(limitDateFrom);
         containDateFrom.add(dateChooserFrom);
 
+
         JLabel limitDateTo = new JLabel("Đến ngày");
         JDateChooser dateChooserTo = new JDateChooser();
-        dateChooserTo.setPreferredSize(new Dimension(121,30));
         dateChooserTo.setFont(new Font("serif",Font.PLAIN,16));
         dateChooserTo.setDateFormatString("yyyy-MM-dd");
+        JTextField placehoderDateTo = (JTextField)dateChooserTo.getDateEditor().getUiComponent();
+        placehoderDateTo.setText("yyyy-mm-dd");
+        focusEventJDatechooser(dateChooserTo);
+        placehoderDateTo.setForeground(new Color(142,142,142));
         JPanel containDateTo = new JPanel(new GridLayout(2,1,0,0));
-        containDateTo.setPreferredSize(new Dimension(107,50));
+        containDateTo.setPreferredSize(new Dimension(112,50));
         containDateTo.add(limitDateTo);
         containDateTo.add(dateChooserTo);
 
         JPanel containLimitDate = new JPanel(new FlowLayout(FlowLayout.LEFT));
         containLimitDate.setPreferredSize(new Dimension(245,60));
         containLimitDate.add(containDateFrom);
-        containLimitDate.add(new JLabel("   "));
+        containLimitDate.add(new JLabel(""));
         containLimitDate.add(containDateTo);
 
 
@@ -235,7 +266,7 @@ public class ManagerInvoice extends JFrame {
         imgComputerIcon = imgComputerIcon.getScaledInstance(20,20,Image.SCALE_SMOOTH);
         computerIcon = new ImageIcon(imgComputerIcon);
         titleComputerFilter = new JLabel("Chọn máy",computerIcon,JLabel.CENTER);
-        setPaddingJLabel(0,0,0,24,titleComputerFilter);
+        setMarginJLabel(0,0,0,24,titleComputerFilter);
         computer = new JComboBox();
         computer.setPreferredSize(new Dimension(120,25));
         for(int i = 1; i <= 20;i++){
@@ -253,11 +284,15 @@ public class ManagerInvoice extends JFrame {
         btnCancel.setPreferredSize(new Dimension(100,35));
         btnCancel.setFocusPainted(false);
         btnCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCancel.setBackground(new Color(255,128,0));
+        btnCancel.setForeground(Color.WHITE);
         setPaddingJButton(0,0,0,0,btnCancel);
         btnSearch = new JButton("Search");
         btnSearch.setPreferredSize(new Dimension(100,35));
         btnSearch.setFocusPainted(false);
         btnSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSearch.setBackground(new Color(42,121,255));
+        btnSearch.setForeground(Color.WHITE);
         setPaddingJButton(0,0,0,0,btnSearch);
         JPanel containActionInFilter = new JPanel(new FlowLayout());
         containActionInFilter.setBorder(BorderFactory.createCompoundBorder(
@@ -284,7 +319,6 @@ public class ManagerInvoice extends JFrame {
 
 
 
-
 //        2--------Body show list invoice-start-----
 
 //            a----Hoa don ban----
@@ -297,15 +331,6 @@ public class ManagerInvoice extends JFrame {
         listInvoiceModelExport.addColumn("Người tạo");
         listInvoiceModelExport.addColumn("Máy");
         listInvoiceModelExport.addColumn("#");
-        ImageIcon operationIcon = new ImageIcon("D:\\projectJava\\src\\GUI\\img\\menu.png");
-        Image imgOperationIcon = operationIcon.getImage().getScaledInstance(25,25,Image.SCALE_SMOOTH);
-//        operationIcon = new ImageIcon(imgOperationIcon);
-
-        //thu nghiem them vai hang du lieu vao ban
-        listInvoiceModelExport.addRow(new Object[]{"HD001","Jam holy","13-12-2022","120.000 Đ","Da xu ly","NV001","May 01"});
-        listInvoiceModelExport.addRow(new Object[]{"HD001","Jam holy","13-12-2022","120.000 Đ","Da xu ly","NV001","May 01"});
-        listInvoiceModelExport.addRow(new Object[]{"HD001","Jam holy","13-12-2022","120.000 Đ","Da xu ly","NV001","May 01"});
-        listInvoiceModelExport.addRow(new Object[]{"HD001","Jam holy","13-12-2022","120.000 Đ","Da xu ly","NV001","May 01"});
 
 
         listInvoiceExport = new JTable();
@@ -323,6 +348,7 @@ public class ManagerInvoice extends JFrame {
         listInvoiceExport.setRowHeight(30);
 
 
+
 //        b----Hoa don nhap ---
         listInvoiceModelImport = new DefaultTableModel();
         listInvoiceModelImport.addColumn("ID");
@@ -332,14 +358,6 @@ public class ManagerInvoice extends JFrame {
         listInvoiceModelImport.addColumn("Trạng thái");
         listInvoiceModelImport.addColumn("#");
 
-
-        //thu nghiem them vai hang du lieu vao ban
-        listInvoiceModelImport.addRow(new Object[]{"HDN001","13-12-2022","120.000 Đ","NV001","Da xu ly"});
-        listInvoiceModelImport.addRow(new Object[]{"HDN001","13-12-2022","120.000 Đ","NV001","Da xu ly"});
-        listInvoiceModelImport.addRow(new Object[]{"HDN001","13-12-2022","120.000 Đ","NV001","Da xu ly"});
-        listInvoiceModelImport.addRow(new Object[]{"HDN001","13-12-2022","120.000 Đ","NV001","Da xu ly"});
-
-
         listInvoiceImport = new JTable();
         listInvoiceImport.setModel(listInvoiceModelImport);
         listInvoiceImport.getTableHeader().setPreferredSize(new Dimension(0,40));
@@ -347,58 +365,56 @@ public class ManagerInvoice extends JFrame {
         listInvoiceImport.setRowHeight(30);
 
 
+        listInvoiceScrollPaneExport = new JScrollPane(listInvoiceExport);
+        listInvoiceScrollPaneImport = new JScrollPane(listInvoiceImport);
 
-
-
-        listInvoiceScrollPane = new JScrollPane();
-
-        JPanel containListInvoice = new JPanel(new GridLayout(1,1));
-        containListInvoice.setPreferredSize(new Dimension(910,498));
-        containListInvoice.add(listInvoiceScrollPane);
 
         titleContainShowListInvoice = new JLabel("Danh sach hoa don ban",JLabel.CENTER);
         titleContainShowListInvoice.setFont(new Font("serif",Font.BOLD,25));
-        JPanel containTitleListInvoice = new JPanel(new GridLayout(1,1));
-        containTitleListInvoice.add(titleContainShowListInvoice);
+        titleContainShowListInvoice.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0,0,0,1)),
+                BorderFactory.createEmptyBorder(10,0,0,0)
+        ));
 
 
-
-        JPanel containShowListInvoice = new JPanel(new FlowLayout(FlowLayout.CENTER,20,15));
+        containShowListInvoice = new JPanel(new BorderLayout(30,20));
         containShowListInvoice.setPreferredSize(new Dimension(945,495));
-        containShowListInvoice.add(containTitleListInvoice);
-        containShowListInvoice.add(containListInvoice);
+        containShowListInvoice.add(titleContainShowListInvoice,BorderLayout.PAGE_START);
+        containShowListInvoice.add(listInvoiceScrollPaneExport,BorderLayout.CENTER);
 //        2-------Body show list invoice-end-----
 
 
-        managerInvoiceBody = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
-        managerInvoiceBody.add(managerInvoiceFilter);
-        managerInvoiceBody.add(containShowListInvoice);
-//        managerInvoiceBody.setBorder(BorderFactory.createLineBorder(Color.red));
+        managerInvoiceBody = new JPanel(new BorderLayout());
+        managerInvoiceBody.add(managerInvoiceFilter,BorderLayout.LINE_START);
+        managerInvoiceBody.add(containShowListInvoice,BorderLayout.CENTER);
+
 //        MANAGER BODY END
 
         managerInvoiceContentPane = new JPanel();
-        managerInvoiceContentPane.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-        sizeInComputer(managerInvoiceContentPane);
+        managerInvoiceContentPane.setLayout(new BorderLayout());
         managerInvoiceContentPane.setBorder(BorderFactory.createMatteBorder(0,2,2,2,new Color(42,121,255)));
-        managerInvoiceContentPane.add(managerInvoiceHeader);
-        managerInvoiceContentPane.add(managerInvoiceBody);
-        this.getContentPane().add(managerInvoiceContentPane);
+        managerInvoiceContentPane.add(managerInvoiceHeader,BorderLayout.PAGE_START);
+        managerInvoiceContentPane.add(managerInvoiceBody,BorderLayout.CENTER);
+        this.getContentPane().add(managerInvoiceContentPane,BorderLayout.CENTER);
         this.setVisible(true);
     }
 
 
 
+
+
+    //phan xu ly su kien
     public void event(){
         actionShowInvoiceImport.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 actionShowInvoiceImport.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0,0,2,0,Color.WHITE),
-                        BorderFactory.createEmptyBorder(50,0,5,0)
-                ));
+                        BorderFactory.createEmptyBorder(0,0,5,0)
+                ));//dung de tao border buttom ben duoi chu "Hoa don ban" khi nhan vao no
                 actionShowInvoiceExport.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(0,0,0,1)),
-                        BorderFactory.createEmptyBorder(50,0,5,0)
+                        BorderFactory.createEmptyBorder(0,0,0,0)
                 ));
 
                 titleContainShowListInvoice.setText("Danh sách hóa đơn nhập");
@@ -406,6 +422,10 @@ public class ManagerInvoice extends JFrame {
                 titleComputerFilter.setEnabled(false);
                 titleContainAccountFilter.setEnabled(false);
                 inputAccountToFilter.setEnabled(false);
+
+                containShowListInvoice.remove(listInvoiceScrollPaneExport);
+                containShowListInvoice.add(listInvoiceScrollPaneImport);
+
             }
         });
 
@@ -414,11 +434,11 @@ public class ManagerInvoice extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 actionShowInvoiceExport.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(0,0,2,0,Color.WHITE),
-                        BorderFactory.createEmptyBorder(50,0,5,0)
+                        BorderFactory.createEmptyBorder(0,0,5,0)
                 ));
                 actionShowInvoiceImport.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(new Color(0,0,0,1)),
-                        BorderFactory.createEmptyBorder(50,0,5,0)
+                        BorderFactory.createEmptyBorder(0,0,0,0)
                 ));
 
                 titleContainShowListInvoice.setText("Danh sách hóa đơn bán");
@@ -426,6 +446,9 @@ public class ManagerInvoice extends JFrame {
                 titleComputerFilter.setEnabled(true);
                 titleContainAccountFilter.setEnabled(true);
                 inputAccountToFilter.setEnabled(true);
+
+                containShowListInvoice.remove(listInvoiceScrollPaneImport);
+                containShowListInvoice.add(listInvoiceScrollPaneExport);
             }
         });
 
@@ -433,12 +456,31 @@ public class ManagerInvoice extends JFrame {
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                JTextField dateField = (JTextField) dateChooserFrom.getDateEditor().getUiComponent();
+                dateField.setText("yyyy-mm-dd");
+                dateField.setForeground(new Color(142,142,142));
             }
         });
 
 
+        btnCreateInvoice.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String[] options = {"Hoa don ban","Hoa don nhap"};
+                int userOption = JOptionPane.showOptionDialog(null,"Hoa don muon tao ?","Options create invoice ",JOptionPane.UNDEFINED_CONDITION,JOptionPane.QUESTION_MESSAGE,null,options,null);
+                if(userOption == 0){
+                    newJFrame showOption = new newJFrame();
+                    showOption.show();//display showOption here
+                }
+//                newJFrame showOption = new newJFrame();
+//                showOption.show();//display showOption here
+//                dispose();//closs current JFrame after open showOption
+            }
+        });
     }
+
+
+
 
     public static void main(String[] args){
         ManagerInvoice quanlyhoadon = new ManagerInvoice();
